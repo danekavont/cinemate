@@ -1,22 +1,13 @@
 // src/components/Navbar.tsx
-import Link from 'next/link';
+'use client';
 
-export default function Nav() {
+export default function Navbar() {
   return (
-    <nav className="w-full px-6 py-4 bg-gray-100 shadow-md">
+    <nav className="w-full px-6 py-4 bg-gray-100 shadow-md sticky top-0 z-10">
       <ul className="flex space-x-6 font-medium text-gray-700">
-        <li>
-          <Link href="/">Home</Link>
-        </li>
-        <li>
-          <Link href="/trending">Trending</Link>
-        </li>
-        <li>
-          <Link href="/top-rated">Top rated</Link>
-        </li>
-        <li>
-          <Link href="/chat">Chat</Link>
-        </li>
+        <li><a href="#trending">Trending</a></li>
+        <li><a href="#top-rated">Top Rated</a></li>
+        <li><a href="#chat">Chat</a></li>
       </ul>
     </nav>
   );
