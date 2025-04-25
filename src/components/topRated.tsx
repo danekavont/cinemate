@@ -1,13 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 type Movie = {
   id: number;
   title: string;
   overview: string;
   poster_path: string | null;
-  release_date: string;
-  vote_average: number;
 };
 
 export default function TopRated() {
@@ -25,12 +24,20 @@ export default function TopRated() {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">⭐ Top Rated Movies</h2>
-      <ul className="grid grid-cols-2 gap-4">
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         {movies.map((movie) => (
-          <li key={movie.id} className="bg-gray-800 text-white p-3 rounded shadow">
-            <h3 className="text-lg font-semibold">{movie.title}</h3>
-            <p className="text-sm text-gray-300">{movie.overview.slice(0, 100)}...</p>
+          <li key={movie.id} className="rounded overflow-hidden shadow-lg">
+            <Link href={`/movie/${movie.id}`}>
+              <img
+                src={
+                  movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    : '/placeholder.jpg'
+                }
+                alt={movie.title}
+                className="rounded-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
+              />
+            </Link>
           </li>
         ))}
       </ul>
