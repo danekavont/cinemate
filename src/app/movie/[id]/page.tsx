@@ -45,10 +45,10 @@ async function getMovieDetails(id: string): Promise<MovieData> {
   const apiKey = process.env.TMDB_API_KEY;
 
   const [detailsRes, creditsRes, videosRes, reviewsRes] = await Promise.all([
-    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=genres`),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${apiKey}`),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${apiKey}`),
+    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=genres`, { cache: 'no-store' }),
+    fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`, { cache: 'no-store' }),
+    fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${apiKey}`, { cache: 'no-store' }),
+    fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${apiKey}`, { cache: 'no-store' }),
   ]);
 
   const [details, credits, videos, reviews] = await Promise.all([
@@ -65,7 +65,7 @@ export default async function MoviePage({ params }: Props) {
   const { details, credits, videos, reviews } = await getMovieDetails(params.id);
 
   const trailer = videos.results.find((vid) => vid.type === 'Trailer' && vid.site === 'YouTube');
-  const cast = credits.cast.slice(0, 6); // show top 6
+  const cast = credits.cast.slice(0, 6); // show top 6 cast members
   const genres = details.genres.map((g) => g.name).join(', ');
 
   return (
@@ -78,8 +78,8 @@ export default async function MoviePage({ params }: Props) {
         <Image
           src={`https://image.tmdb.org/t/p/w500${details.poster_path}`}
           alt={details.title}
-          width={500}  // Adjust width as needed
-          height={750} // Adjust height as needed
+          width={500}
+          height={750}
           className="w-64 rounded"
         />
         <p className="text-lg text-gray-300">{details.overview}</p>
@@ -130,7 +130,7 @@ export default async function MoviePage({ params }: Props) {
         )}
       </div>
 
-      {/* Chat Section */ }
+      {/* Chat Section */}
       <section id="chat">
         <h2 className="text-gray-400 text-lg font-semibold mb-4">Ask Cinemate</h2>
         <Chat />
