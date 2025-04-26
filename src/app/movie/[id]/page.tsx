@@ -1,13 +1,18 @@
-import Chat from '@/components/chat';
+'use client'; 
+
+// app/movie/[id]/page.tsx
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'; // Import useRouter for dynamic routing on the client side
 import Image from 'next/image';
 
+// Define types for the API responses
 interface MovieDetails {
   title: string;
   genres: { name: string }[];
   runtime: number;
   vote_average: number;
   overview: string;
-  poster_path: string | null;
+  poster_path: string;
 }
 
 interface CastMember {
@@ -35,43 +40,52 @@ interface MovieData {
   reviews: { results: Review[] };
 }
 
-interface MoviePageProps {
-  params: { id: string };
-}
+const MoviePage = () => {
+  const router = useRouter();
+  const { id } = router.query;  // Extract the movie ID from the URL parameters
 
-async function getMovieDetails(id: string): Promise<MovieData> {
-  const apiKey = process.env.TMDB_API_KEY;
-  if (!apiKey) throw new Error('Missing TMDB_API_KEY');
+  const [movieData, setMovieData] = useState<MovieData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [detailsRes, creditsRes, videosRes, reviewsRes] = await Promise.all([
-    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=genres`, { cache: 'no-store' }),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`, { cache: 'no-store' }),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${apiKey}`, { cache: 'no-store' }),
-    fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${apiKey}`, { cache: 'no-store' }),
-  ]);
+  useEffect(() => {
+    if (id) {
+      const fetchMovieDetails = async () => {
+        const apiKey = process.env.TMDB_API_KEY;
 
-  if (!detailsRes.ok || !creditsRes.ok || !videosRes.ok || !reviewsRes.ok) {
-    throw new Error('Failed to fetch movie data');
+        const [detailsRes, creditsRes, videosRes, reviewsRes] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=genres`),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${apiKey}`),
+          fetch(`https://api.themoviedb.org/3/movie/${id}/reviews?api_key=${apiKey}`),
+        ]);
+
+        const [details, credits, videos, reviews] = await Promise.all([
+          detailsRes.json(),
+          creditsRes.json(),
+          videosRes.json(),
+          reviewsRes.json(),
+        ]);
+
+        setMovieData({ details, credits, videos, reviews });
+        setIsLoading(false);
+      };
+
+      fetchMovieDetails();
+    }
+  }, [id]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  const [details, credits, videos, reviews] = await Promise.all([
-    detailsRes.json(),
-    creditsRes.json(),
-    videosRes.json(),
-    reviewsRes.json(),
-  ]);
+  if (!movieData) {
+    return <div>Movie data not available.</div>;
+  }
 
-  return { details, credits, videos, reviews };
-}
+  const { details, credits, videos, reviews } = movieData;
 
-export default async function MoviePage({ params }: MoviePageProps) {
-  const { details, credits, videos, reviews } = await getMovieDetails(params.id);
-
-  const trailer = videos.results.find(
-    (vid) => vid.type === 'Trailer' && vid.site === 'YouTube'
-  );
-
-  const cast = credits.cast.slice(0, 6);
+  const trailer = videos.results.find((vid) => vid.type === 'Trailer' && vid.site === 'YouTube');
+  const cast = credits.cast.slice(0, 6); // show top 6
   const genres = details.genres.map((g) => g.name).join(', ');
 
   return (
@@ -79,26 +93,22 @@ export default async function MoviePage({ params }: MoviePageProps) {
       <h1 className="text-3xl font-bold">{details.title}</h1>
       <p className="text-gray-400">{genres} | {details.runtime} mins | ⭐ {details.vote_average}</p>
 
-      <div className="flex flex-col md:flex-row gap-6 mt-6">
-        {details.poster_path ? (
-          <Image
-            src={`https://image.tmdb.org/t/p/w500${details.poster_path}`}
-            alt={details.title}
-            width={500}
-            height={750}
-            className="w-64 rounded"
-          />
-        ) : (
-          <div className="w-64 h-[750px] bg-gray-700 rounded flex items-center justify-center text-gray-400">
-            No Image
-          </div>
-        )}
+      {/* Poster and Overview */}
+      <div className="flex flex-col md:flex-row gap-6">
+        <Image
+          src={`https://image.tmdb.org/t/p/w500${details.poster_path}`}
+          alt={details.title}
+          width={500}  // Adjust width as needed
+          height={750} // Adjust height as needed
+          className="w-64 rounded"
+        />
         <p className="text-lg text-gray-300">{details.overview}</p>
       </div>
 
+      {/* Trailer */}
       {trailer && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-2">🎬 Trailer</h2>
+        <div>
+          <h2 className="text-xl font-semibold mt-6 mb-2">🎬 Trailer</h2>
           <iframe
             width="100%"
             height="400"
@@ -110,8 +120,9 @@ export default async function MoviePage({ params }: MoviePageProps) {
         </div>
       )}
 
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-2">🎭 Cast</h2>
+      {/* Cast */}
+      <div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">🎭 Cast</h2>
         <ul className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {cast.map((actor) => (
             <li key={actor.id} className="text-sm">
@@ -122,16 +133,15 @@ export default async function MoviePage({ params }: MoviePageProps) {
         </ul>
       </div>
 
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-2">📝 Reviews</h2>
+      {/* Reviews */}
+      <div>
+        <h2 className="text-xl font-semibold mt-6 mb-2">📝 Reviews</h2>
         {reviews.results.length > 0 ? (
           <ul className="space-y-4">
             {reviews.results.slice(0, 3).map((review) => (
               <li key={review.id} className="bg-gray-800 p-4 rounded">
                 <p className="font-semibold text-yellow-400">{review.author}</p>
-                <p className="text-sm text-gray-300 mt-1">
-                  {review.content.slice(0, 250)}...
-                </p>
+                <p className="text-sm text-gray-300 mt-1">{review.content.slice(0, 250)}...</p>
               </li>
             ))}
           </ul>
@@ -139,11 +149,8 @@ export default async function MoviePage({ params }: MoviePageProps) {
           <p className="text-gray-500">No reviews available.</p>
         )}
       </div>
-
-      <section id="chat" className="mt-12">
-        <h2 className="text-gray-400 text-lg font-semibold mb-4">Ask Cinemate</h2>
-        <Chat />
-      </section>
     </div>
   );
-}
+};
+
+export default MoviePage;
