@@ -130,7 +130,7 @@ export default async function MoviePage({ params }: Props) {
         )}
       </div>
 
-      {/* Chat Section */}
+      {/* Chat Section */ }
       <section id="chat">
         <h2 className="text-gray-400 text-lg font-semibold mb-4">Ask Cinemate</h2>
         <Chat />
