@@ -1,8 +1,6 @@
-// src/app/movie/[id]/page.tsx
 import Chat from '@/components/chat';
 import Image from 'next/image';
 
-// Define types for the API responses
 interface MovieDetails {
   title: string;
   genres: { name: string }[];
@@ -37,17 +35,13 @@ interface MovieData {
   reviews: { results: Review[] };
 }
 
-// 🛠 Correct manual props typing
 interface MoviePageProps {
   params: { id: string };
 }
 
-// Fetch movie details from TMDB API
 async function getMovieDetails(id: string): Promise<MovieData> {
   const apiKey = process.env.TMDB_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing TMDB_API_KEY');
-  }
+  if (!apiKey) throw new Error('Missing TMDB_API_KEY');
 
   const [detailsRes, creditsRes, videosRes, reviewsRes] = await Promise.all([
     fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=genres`, { cache: 'no-store' }),
@@ -70,7 +64,6 @@ async function getMovieDetails(id: string): Promise<MovieData> {
   return { details, credits, videos, reviews };
 }
 
-// Page Component
 export default async function MoviePage({ params }: MoviePageProps) {
   const { details, credits, videos, reviews } = await getMovieDetails(params.id);
 
@@ -83,13 +76,9 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
   return (
     <div className="bg-[#1e1e1e] text-white min-h-screen px-6 py-8 space-y-6">
-      {/* Title and Basic Info */}
       <h1 className="text-3xl font-bold">{details.title}</h1>
-      <p className="text-gray-400">
-        {genres} | {details.runtime} mins | ⭐ {details.vote_average}
-      </p>
+      <p className="text-gray-400">{genres} | {details.runtime} mins | ⭐ {details.vote_average}</p>
 
-      {/* Poster and Overview */}
       <div className="flex flex-col md:flex-row gap-6 mt-6">
         {details.poster_path ? (
           <Image
@@ -107,7 +96,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
         <p className="text-lg text-gray-300">{details.overview}</p>
       </div>
 
-      {/* Trailer */}
       {trailer && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">🎬 Trailer</h2>
@@ -122,7 +110,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
         </div>
       )}
 
-      {/* Cast */}
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-2">🎭 Cast</h2>
         <ul className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -135,7 +122,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
         </ul>
       </div>
 
-      {/* Reviews */}
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-2">📝 Reviews</h2>
         {reviews.results.length > 0 ? (
@@ -154,11 +140,8 @@ export default async function MoviePage({ params }: MoviePageProps) {
         )}
       </div>
 
-      {/* Chat Section */}
       <section id="chat" className="mt-12">
-        <h2 className="text-gray-400 text-lg font-semibold mb-4">
-          Ask Cinemate
-        </h2>
+        <h2 className="text-gray-400 text-lg font-semibold mb-4">Ask Cinemate</h2>
         <Chat />
       </section>
     </div>

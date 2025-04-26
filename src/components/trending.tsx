@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Movie = {
   id: number;
@@ -17,7 +18,6 @@ export default function Trending() {
       const data = await res.json();
       setMovies(data.results || []);
     };
-
     fetchTrending();
   }, []);
 
@@ -27,9 +27,15 @@ export default function Trending() {
         {movies.map((movie) => (
           <li key={movie.id}>
             <Link href={`/movie/${movie.id}`}>
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+              <Image
+                src={
+                  movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    : '/placeholder.jpg'
+                }
                 alt={movie.title}
+                width={500}
+                height={750}
                 className="rounded-md hover:scale-105 transition-transform duration-200 cursor-pointer"
               />
             </Link>

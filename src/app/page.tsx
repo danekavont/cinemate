@@ -1,4 +1,3 @@
-
 import Chat from '@/components/chat';
 import Trending from '@/components/trending';
 import TopRated from '@/components/topRated';
