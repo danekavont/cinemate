@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Movie = {
   id: number;
@@ -28,7 +29,7 @@ export default function TopRated() {
         {movies.map((movie) => (
           <li key={movie.id} className="rounded overflow-hidden shadow-lg">
             <Link href={`/movie/${movie.id}`}>
-              <img
+              <Image
                 src={
                   movie.poster_path
                     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -36,6 +37,9 @@ export default function TopRated() {
                 }
                 alt={movie.title}
                 className="rounded-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
+                width={500}  // Adjust width
+                height={750} // Adjust height to match aspect ratio
+                priority  // Add priority to improve LCP
               />
             </Link>
           </li>
