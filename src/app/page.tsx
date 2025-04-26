@@ -4,7 +4,7 @@ import TopRated from '@/components/topRated';
 
 export default function Home() {
   return (
-    <main className="bg-[#1e1e1e] text-white px-8 py-6 space-y-12 min-h-screen">
+    <main className="bg-[#1e1e1e] text-white px-8 py-40 space-y-12 min-h-screen">
       {/* Trending Section */}
       <section id="trending">
         <h2 className="text-gray-400 text-lg font-semibold mb-4">🔥 Trending Movies</h2>
