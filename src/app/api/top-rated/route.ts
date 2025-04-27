@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const apiKey = process.env.TMDB_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json({ error: 'Missing TMDB API key' }, { status: 500 });
