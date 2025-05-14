@@ -19,6 +19,7 @@ export default function TopRated() {
       const data = await res.json();
       setMovies(data.results || []);
     };
+
     fetchTopRated();
   }, []);
 
@@ -35,10 +36,9 @@ export default function TopRated() {
                     : '/placeholder.jpg'
                 }
                 alt={movie.title}
-                width={500}
-                height={750}
+                width={300} // or your preferred width
+                height={450} // or your preferred height
                 className="rounded-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
-                priority
               />
             </Link>
           </li>

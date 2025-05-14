@@ -18,6 +18,7 @@ export default function Trending() {
       const data = await res.json();
       setMovies(data.results || []);
     };
+
     fetchTrending();
   }, []);
 
@@ -26,16 +27,12 @@ export default function Trending() {
       <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {movies.map((movie) => (
           <li key={movie.id}>
-            <Link href={`/movie/${movie.id}`}>
+            <Link href={`/movie/${movie.id}`} className="block">
               <Image
-                src={
-                  movie.poster_path
-                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                    : '/placeholder.jpg'
-                }
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
-                width={500}
-                height={750}
+                width={300} // Set width (adjust if needed)
+                height={450} // Set height (adjust if needed)
                 className="rounded-md hover:scale-105 transition-transform duration-200 cursor-pointer"
               />
             </Link>
