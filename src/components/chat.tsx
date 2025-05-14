@@ -60,14 +60,15 @@ export default function Chat() {
   };
 
   return (
-    <div className="p-4 rounded shadow max-w-xl mx-auto">
-      <div className="h-60 overflow-y-auto mb-3 border p-3 rounded space-y-2">
+    <div className="p-4 border rounded bg-black shadow max-w-xl mx-auto">
+      <h2 className="text-xl font-semibold mb-3 text-white">🎬 Movie Chatbot</h2>
+      <div className="h-60 overflow-y-auto mb-3 border p-3 bg-gray-800 rounded space-y-2">
         {messages.map((msg, idx) => (
           <div
             key={idx}
             className={`text-sm px-3 py-1 rounded-md max-w-[80%] ${
               msg.sender === 'user'
-                ? 'bg-black self-end ml-auto text-right text-white'
+                ? 'bg-blue-800 self-end ml-auto text-right text-white'
                 : 'bg-gray-700 text-gray-100'
             }`}
           >
@@ -85,11 +86,11 @@ export default function Chat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Ask a question"
+          placeholder="Ask about a movie..."
         />
         <button
           onClick={sendMessage}
-          className="bg-yellow-400 text-black px-3 py-1 rounded"
+          className="bg-blue-800 text-white px-3 py-1 rounded"
           disabled={loading}
         >
           Send
